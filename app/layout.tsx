@@ -2,9 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
+import { AuthModal } from "@/components/AuthModal";
+import { CustomerDrawer } from "@/components/CustomerDrawer";
 import { siteConfig } from "@/data/site";
 
 const cormorant = Cormorant_Garamond({
@@ -89,12 +93,18 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} scroll-smooth`}
     >
       <body className="min-h-screen flex flex-col bg-[#F4EEE4] text-[#1C211E] antialiased selection:bg-[#063C2D] selection:text-[#F4EEE4]">
-        <CartProvider>
-          <Header />
-          <CartDrawer />
-          <main className="flex-1 w-full">{children}</main>
-          <Footer />
-        </CartProvider>
+        <CustomerAuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <Header />
+              <CartDrawer />
+              <AuthModal />
+              <CustomerDrawer />
+              <main className="flex-1 w-full">{children}</main>
+              <Footer />
+            </CartProvider>
+          </WishlistProvider>
+        </CustomerAuthProvider>
       </body>
     </html>
   );

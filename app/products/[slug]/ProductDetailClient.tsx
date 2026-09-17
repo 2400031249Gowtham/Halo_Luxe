@@ -4,12 +4,15 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { formatPrice } from "@/lib/utils";
 import { SparkleStar } from "@/components/SparkleStar";
-import { Plus, Minus, Check, ShieldCheck, Award, Truck } from "lucide-react";
+import { Plus, Minus, Check, ShieldCheck, Award, Truck, Heart } from "lucide-react";
 
 export function ProductDetailClient({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
   const [selectedSize, setSelectedSize] = useState<string>(product.size);
   const [quantity, setQuantity] = useState<number>(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
@@ -175,6 +178,23 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   </span>
                 </>
               )}
+            </button>
+
+            {/* Wishlist CTA */}
+            <button
+              type="button"
+              onClick={() => toggleWishlist(product.id)}
+              className={`p-4 border transition-all duration-300 flex items-center justify-center focus-visible:outline-none ${
+                isWishlisted
+                  ? "border-[#C8A15A] bg-[#02281E] text-[#C8A15A]"
+                  : "border-[#C8A15A]/40 bg-white/60 text-[#02281E] hover:border-[#C8A15A] hover:bg-white"
+              }`}
+              title={isWishlisted ? "In Wishlist" : "Save to Wishlist"}
+              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            >
+              <Heart
+                className={`w-5 h-5 ${isWishlisted ? "fill-[#C8A15A]" : ""}`}
+              />
             </button>
           </div>
 

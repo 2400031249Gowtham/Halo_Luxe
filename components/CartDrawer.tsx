@@ -17,6 +17,7 @@ export function CartDrawer() {
     setIsCartOpen,
     removeItem,
     updateQuantity,
+    clearCart,
     subtotal,
     totalItems,
   } = useCart();
@@ -74,13 +75,24 @@ export function CartDrawer() {
               Clinic Order ({totalItems})
             </h2>
           </div>
-          <button
-            onClick={() => setIsCartOpen(false)}
-            className="p-2 text-[#02281E]/70 hover:text-[#02281E] hover:bg-[#063C2D]/5 rounded transition-colors"
-            aria-label="Close cart"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            {items.length > 0 && (
+              <button
+                type="button"
+                onClick={clearCart}
+                className="text-[11px] font-sans uppercase tracking-wider text-rose-700 hover:text-rose-900 transition-colors font-semibold underline cursor-pointer"
+              >
+                Clear All
+              </button>
+            )}
+            <button
+              onClick={() => setIsCartOpen(false)}
+              className="p-2 text-[#02281E]/70 hover:text-[#02281E] hover:bg-[#063C2D]/5 rounded transition-colors cursor-pointer"
+              aria-label="Close cart"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -197,18 +209,24 @@ export function CartDrawer() {
               ✓ Shipping across India. Sourced through an authorised Swarovski® distribution partner for professional dental application.
             </p>
 
-            <Link
-              href={`/contact?type=Product+enquiry&order=${encodeURIComponent(
-                items
-                  .map((i) => `${i.product.name} (${i.selectedSize}) x${i.quantity}`)
-                  .join(", ")
-              )}`}
-              onClick={() => setIsCartOpen(false)}
-              className="w-full py-3.5 px-6 bg-[#063C2D] text-[#F4EEE4] font-sans text-xs uppercase tracking-[0.18em] font-medium hover:bg-[#0B5942] transition-colors text-center flex items-center justify-center gap-2"
-            >
-              <span>Submit Clinic Order Inquiry</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="space-y-2.5 pt-1">
+              <Link
+                href="/checkout"
+                onClick={() => setIsCartOpen(false)}
+                className="w-full py-3.5 px-6 bg-[#02281E] text-[#F4EEE4] font-sans text-xs uppercase tracking-[0.2em] font-semibold hover:bg-[#0B5942] transition-colors text-center flex items-center justify-center gap-2 shadow-sm"
+              >
+                <span>Proceed to Checkout</span>
+                <ArrowRight className="w-4 h-4 text-[#D9BD82]" />
+              </Link>
+
+              <Link
+                href="/cart"
+                onClick={() => setIsCartOpen(false)}
+                className="w-full py-2.5 px-4 border border-[#C8A15A]/40 text-[#02281E] font-sans text-xs uppercase tracking-[0.16em] font-semibold hover:bg-[#EDE4D5] transition-colors text-center flex items-center justify-center gap-1.5"
+              >
+                <span>View Full Cart</span>
+              </Link>
+            </div>
 
             <button
               onClick={() => setIsCartOpen(false)}

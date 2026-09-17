@@ -6,7 +6,9 @@ import Link from "next/link";
 import { Product } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { SparkleStar } from "./SparkleStar";
+import { Heart } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +16,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
 
   return (
     <div className="group flex flex-col bg-[#EDE4D5]/40 border border-[#C8A15A]/25 transition-all duration-300 hover:border-[#C8A15A]/60 hover:shadow-md">
@@ -35,6 +39,28 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="absolute top-3 left-3 bg-[#02281E]/90 backdrop-blur-xs px-2.5 py-1 text-[10px] font-sans uppercase tracking-[0.16em] text-[#D9BD82] border border-[#C8A15A]/20">
           Pack of 10
         </div>
+
+        {/* Wishlist Heart Toggle */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 z-10 ${
+            isWishlisted
+              ? "bg-[#02281E] text-[#C8A15A] shadow-md scale-110"
+              : "bg-[#02281E]/60 text-white/80 hover:text-[#D9BD82] hover:bg-[#02281E]/90"
+          }`}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <Heart
+            className={`w-4 h-4 transition-all ${
+              isWishlisted ? "fill-[#C8A15A]" : ""
+            }`}
+          />
+        </button>
       </Link>
 
       {/* Product Info */}

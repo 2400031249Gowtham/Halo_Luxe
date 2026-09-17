@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product } from "@/data/products";
+import { useCustomerAuth } from "./CustomerAuthContext";
 
 export interface CartItem {
   product: Product;
@@ -24,33 +25,65 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user, isLoading: isAuthLoading } = useCustomerAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load cart from localStorage on mount
+  const getCartKey = (u: any) => (u?.id ? `halo_cart_${u.id}` : "halo_cart_guest");
+
+  // Load cart when user auth status resolves
   useEffect(() => {
+    if (isAuthLoading) return;
+
     try {
-      const saved = localStorage.getItem("halo_cart");
+      // Purge any legacy un-scoped cart key from prior versions
+      localStorage.removeItem("halo_cart");
+
+      const key = getCartKey(user);
+      const saved = localStorage.getItem(key);
       if (saved) {
         setItems(JSON.parse(saved));
+      } else {
+        setItems([]);
       }
     } catch (e) {
       console.error("Failed to load cart from storage", e);
     }
     setIsLoaded(true);
-  }, []);
+  }, [user, isAuthLoading]);
 
-  // Save cart to localStorage on changes
+  // Listen for logout event to clear cart immediately
   useEffect(() => {
-    if (isLoaded) {
+    const handleLogout = () => {
+      setItems([]);
       try {
-        localStorage.setItem("halo_cart", JSON.stringify(items));
+        localStorage.removeItem("halo_cart");
+        localStorage.removeItem("halo_cart_guest");
+        if (user?.id) {
+          localStorage.removeItem(`halo_cart_${user.id}`);
+        }
+      } catch (e) {}
+    };
+    window.addEventListener("halo:logout", handleLogout);
+    return () => window.removeEventListener("halo:logout", handleLogout);
+  }, [user]);
+
+  // Save cart to user-scoped localStorage key on changes
+  useEffect(() => {
+    if (isLoaded && !isAuthLoading) {
+      try {
+        const key = getCartKey(user);
+        if (items.length > 0) {
+          localStorage.setItem(key, JSON.stringify(items));
+        } else {
+          localStorage.removeItem(key);
+        }
       } catch (e) {
         console.error("Failed to save cart to storage", e);
       }
     }
-  }, [items, isLoaded]);
+  }, [items, isLoaded, user, isAuthLoading]);
 
   const addItem = (
     product: Product,
@@ -94,7 +127,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    try {
+      localStorage.removeItem("halo_cart");
+      localStorage.removeItem("halo_cart_guest");
+      if (user?.id) {
+        localStorage.removeItem(`halo_cart_${user.id}`);
+      }
+    } catch (e) {
+      console.error("Failed to clear cart storage", e);
+    }
+  };
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = items.reduce(

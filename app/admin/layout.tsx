@@ -7,7 +7,8 @@ import {
   LayoutDashboard,
   Package,
   Layers,
-  Image as ImageIcon,
+  ShoppingBag,
+  Users,
   Settings,
   LogOut,
   Menu,
@@ -108,9 +109,15 @@ export default function AdminLayout({
       exact: false,
     },
     {
-      label: "Media Library",
-      href: "/admin/media",
-      icon: ImageIcon,
+      label: "Orders",
+      href: "/admin/orders",
+      icon: ShoppingBag,
+      exact: false,
+    },
+    {
+      label: "Customers",
+      href: "/admin/users",
+      icon: Users,
       exact: false,
     },
     {
@@ -142,7 +149,7 @@ export default function AdminLayout({
 
       {/* Sidebar for Desktop & Mobile Overlay */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#02281E] text-[#F4EEE4] border-r border-[#C8A15A]/20 flex flex-col justify-between transition-transform duration-300 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#02281E] text-[#F4EEE4] border-r border-[#C8A15A]/20 flex flex-col justify-between transition-transform duration-300 md:sticky md:top-0 md:h-screen md:shrink-0 md:translate-x-0 overflow-y-auto ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -239,7 +246,7 @@ export default function AdminLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Desktop Topbar */}
-        <header className="hidden md:flex items-center justify-between px-8 py-4 bg-[#EDE4D5]/50 border-b border-[#C8A15A]/25 backdrop-blur-xs">
+        <header className="hidden md:flex items-center justify-between px-8 py-4 bg-[#EDE4D5]/95 border-b border-[#C8A15A]/25 backdrop-blur-md sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2 text-xs font-sans tracking-wide text-[#1C211E]/70">
             <span className="uppercase text-[#063C2D] font-semibold">HALO Admin</span>
             <span>/</span>

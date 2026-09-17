@@ -51,6 +51,7 @@ export async function GET(req: Request) {
 
     const formatted = products.map((p) => ({
       ...p,
+      id: p._id.toString(),
       image: imageMap.get(p._id.toString()) || "/images/crystal-individual.jpg",
     }));
 
